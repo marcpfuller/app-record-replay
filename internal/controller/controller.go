@@ -39,6 +39,8 @@ const (
 	failedRecordDurationValidate   = "Record request failed validation: Duration must be > 0 when set"
 	failedRecordEventLimitValidate = "Record request failed validation: Event Limit must be > 0 when set"
 	failedRecording                = "Recording failed"
+	failedRecordStatusRetrieve     = "Failed to retrieve recording status"
+	failedRecordStatusMarshal      = "failed to marshal recording status"
 )
 
 type httpController struct {
@@ -143,14 +145,14 @@ func (c *httpController) recordingStatus(writer http.ResponseWriter, request *ht
 	recordingStatus, err := c.dataManager.RecordingStatus()
 	if err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
-		_, _ = writer.Write([]byte(fmt.Sprintf("failed to retrieve recording status: %v", err)))
+		_, _ = writer.Write([]byte(fmt.Sprintf("%s: %v", failedRecordStatusRetrieve, err)))
 		return
 	}
 
 	jsonResponse, err := json.Marshal(recordingStatus)
 	if err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
-		_, _ = writer.Write([]byte(fmt.Sprintf("failed to marshal recording status: %s", err)))
+		_, _ = writer.Write([]byte(fmt.Sprintf("%s: %v", failedRecordStatusMarshal, err)))
 		return
 	}
 
