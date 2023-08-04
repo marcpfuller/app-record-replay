@@ -129,7 +129,7 @@ func (c *httpController) startRecording(writer http.ResponseWriter, request *htt
 		return
 	}
 
-	if err := c.dataManager.StartRecording(startRequest); err != nil {
+	if err := c.dataManager.StartRecording(*startRequest); err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
 		_, _ = writer.Write([]byte(fmt.Sprintf("%s: %v", failedRecording, err)))
 		return
@@ -151,12 +151,7 @@ func (c *httpController) cancelRecording(writer http.ResponseWriter, request *ht
 
 // recordingStatus returns the status of the current recording session
 func (c *httpController) recordingStatus(writer http.ResponseWriter, request *http.Request) {
-	recordingStatus, err := c.dataManager.RecordingStatus()
-	if err != nil {
-		writer.WriteHeader(http.StatusInternalServerError)
-		_, _ = writer.Write([]byte(fmt.Sprintf("failed to retrieve recording status: %v", err)))
-		return
-	}
+	recordingStatus := c.dataManager.RecordingStatus()
 
 	jsonResponse, err := json.Marshal(recordingStatus)
 	if err != nil {
@@ -192,7 +187,7 @@ func (c *httpController) startReplay(writer http.ResponseWriter, request *http.R
 		return
 	}
 
-	if err := c.dataManager.StartReplay(startRequest); err != nil {
+	if err := c.dataManager.StartReplay(*startRequest); err != nil {
 		writer.WriteHeader(http.StatusInternalServerError)
 		_, _ = writer.Write([]byte(fmt.Sprintf("%s: %v", failedReplay, err)))
 		return
@@ -214,12 +209,7 @@ func (c *httpController) cancelReplay(writer http.ResponseWriter, request *http.
 
 // replayStatus returns the status of the current replay session
 func (c *httpController) replayStatus(writer http.ResponseWriter, request *http.Request) {
-	replayStatus, err := c.dataManager.ReplayStatus()
-	if err != nil {
-		writer.WriteHeader(http.StatusInternalServerError)
-		_, _ = writer.Write([]byte(fmt.Sprintf("failed to retrieve replay status: %v", err)))
-		return
-	}
+	replayStatus := c.dataManager.ReplayStatus()
 
 	jsonResponse, err := json.Marshal(replayStatus)
 	if err != nil {

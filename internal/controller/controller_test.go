@@ -174,20 +174,15 @@ func TestHttpController_RecordingStatus(t *testing.T) {
 	}
 	tests := []struct {
 		Name             string
-		ExpectedResponse *dtos.RecordStatus
+		ExpectedResponse dtos.RecordStatus
 		ExpectedStatus   int
 		ExpectedError    error
 	}{
 		{
 			Name:             "Valid in progress status test",
-			ExpectedResponse: &inProgressRecordStatus,
+			ExpectedResponse: inProgressRecordStatus,
 			ExpectedStatus:   http.StatusOK,
 			ExpectedError:    nil,
-		},
-		{
-			Name:           "retrieve status error",
-			ExpectedError:  errors.New("failed"),
-			ExpectedStatus: http.StatusInternalServerError,
 		},
 	}
 
@@ -210,7 +205,7 @@ func TestHttpController_RecordingStatus(t *testing.T) {
 			err = json.Unmarshal(testRecorder.Body.Bytes(), &actualResponse)
 			require.NoError(t, err)
 
-			require.Equal(t, test.ExpectedResponse, &actualResponse)
+			require.Equal(t, test.ExpectedResponse, actualResponse)
 		})
 	}
 }
@@ -316,26 +311,21 @@ func TestHttpController_ReplayStatus(t *testing.T) {
 	}
 	tests := []struct {
 		Name             string
-		ExpectedResponse *dtos.ReplayStatus
+		ExpectedResponse dtos.ReplayStatus
 		ExpectedStatus   int
 		ExpectedError    error
 	}{
 		{
 			Name:             "Valid in progress status test",
-			ExpectedResponse: &inProgressReplayStatus,
+			ExpectedResponse: inProgressReplayStatus,
 			ExpectedStatus:   http.StatusOK,
 			ExpectedError:    nil,
 		},
 		{
 			Name:             "Valid not running replay status",
-			ExpectedResponse: &notRunningReplayStatus,
+			ExpectedResponse: notRunningReplayStatus,
 			ExpectedStatus:   http.StatusOK,
 			ExpectedError:    nil,
-		},
-		{
-			Name:           "retrieve status error",
-			ExpectedError:  errors.New("failed"),
-			ExpectedStatus: http.StatusInternalServerError,
 		},
 	}
 
@@ -358,7 +348,7 @@ func TestHttpController_ReplayStatus(t *testing.T) {
 			err = json.Unmarshal(testRecorder.Body.Bytes(), &actualResponse)
 			require.NoError(t, err)
 
-			require.Equal(t, test.ExpectedResponse, &actualResponse)
+			require.Equal(t, test.ExpectedResponse, actualResponse)
 		})
 	}
 }
