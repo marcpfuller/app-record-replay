@@ -47,9 +47,10 @@ const (
 	failedReplay                   = "Replay failed"
 	failedDataCompression          = "failed to compress recorded data of type"
 
-	noCompression   = ""
-	zlibCompression = "ZLIB"
-	gzipCompression = "GZIP"
+	noCompression    = ""
+	zlibCompression  = "ZLIB"
+	gzipCompression  = "GZIP"
+	exportedFilename = "recordedData"
 )
 
 type httpController struct {
@@ -238,6 +239,8 @@ func (c *httpController) exportRecordedData(writer http.ResponseWriter, request 
 		return
 	}
 
+	writer.Header().Set("Content-Type", "application/octet-stream")
+	writer.Header().Set("Content-Disposition", fmt.Sprintf(`attachment; filename="%s"`, exportedFilename))
 	compression := request.URL.Query().Get("compression")
 	switch compression {
 	case noCompression:
@@ -247,13 +250,11 @@ func (c *httpController) exportRecordedData(writer http.ResponseWriter, request 
 			_, _ = writer.Write([]byte("failed to marshal recorded data"))
 			return
 		}
-		writer.Header().Set("Content-Type", "application/json")
 		writer.WriteHeader(http.StatusOK)
 		_, _ = writer.Write(jsonResponse)
 
 	case zlibCompression:
 		writer.Header().Set("Content-Encoding", "ZLIB")
-		writer.Header().Set("Content-Type", "application/json")
 		zlibWriter := zlib.NewWriter(writer)
 		defer zlibWriter.Close()
 		err = json.NewEncoder(zlibWriter).Encode(&recordedData)
@@ -266,7 +267,6 @@ func (c *httpController) exportRecordedData(writer http.ResponseWriter, request 
 
 	case gzipCompression:
 		writer.Header().Set("Content-Encoding", "GZIP")
-		writer.Header().Set("Content-Type", "application/json")
 		gZipWriter := gzip.NewWriter(writer)
 		defer gZipWriter.Close()
 		err = json.NewEncoder(gZipWriter).Encode(&recordedData)
